@@ -47,6 +47,9 @@ public class FileUploadServlet extends HttpServlet{
 			part.write(uploadFilePath+File.separator+fileName);
 		}
 		
+		String filePath = uploadFilePath+"/"+fileName;
+		
+		request.setAttribute("filePath", filePath);
 		request.setAttribute("message", fileName+" File uploaded successfully!");
 		request.getServletContext().getRequestDispatcher("/response.jsp").forward(request,response);
 		
