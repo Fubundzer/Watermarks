@@ -14,18 +14,11 @@
 	<%-- Using JSP EL to get message attribute value from request scope --%>
     <h2>${requestScope.message}</h2>
     <h3>${filePath}</h3>
+    <h4>${filePath2}</h4>
     <c:set var="test" value='${filePath}'/>
     <c:set var="test2" value="test1"/>
-    <%
-    	String file="";
-    	file+=(String)pageContext.getAttribute("test");
-    	System.out.println(file);
-    	//BufferedImage bimg=ImageIO.read(new File(file));
-    	//int width = bimg.getWidth();
-    	//int height = bimg.getHeight();
-    	//System.out.println(width+"   "+height);
-    %>
-    <img src="/home/michalr/Obrazy/landscape-mountains-nature-lake.jpg" alt="asd" height="4288" width="2848">
+    <img src="${filePath2}" alt="asd" height="${height}" width="${width}">
+    <img src="${filePath3}" alt="asddd" height="${height}" width="${width}">
     <a href="http://localhost:8080/Watermarks/index.html">Upload another file!</a>
 </body>
 </html>

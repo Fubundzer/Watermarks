@@ -1,8 +1,16 @@
 package com.journaldev.servlet;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -48,8 +56,17 @@ public class FileUploadServlet extends HttpServlet{
 		}
 		
 		String filePath = uploadFilePath+"/"+fileName;
-		
+		BufferedImage bimg=ImageIO.read(new File(filePath));
+		int height=bimg.getHeight();
+		int width=bimg.getWidth();
+		File sourceImageFile= new File(filePath);
+		File destImageFile=new File(uploadFilePath+"/"+"watermarked.gif");
+		addTextWatermark("Watermark", sourceImageFile,destImageFile);
+		request.setAttribute("height", height);
+		request.setAttribute("width", width);
 		request.setAttribute("filePath", filePath);
+		request.setAttribute("filePath2", "uploads/"+fileName);
+		request.setAttribute("filePath3", "uploads/watermarked.gif");
 		request.setAttribute("message", fileName+" File uploaded successfully!");
 		request.getServletContext().getRequestDispatcher("/response.jsp").forward(request,response);
 		
@@ -68,5 +85,34 @@ public class FileUploadServlet extends HttpServlet{
 			}
 		}
 		return "";
+	}
+	
+	private static void addTextWatermark(String text, File sourceImageFile, File destImageFile){
+		try{
+			BufferedImage sourceImage=ImageIO.read(sourceImageFile);
+			Graphics2D g2d= (Graphics2D) sourceImage.getGraphics();
+			
+			//initializes necessary graphic properieties
+			AlphaComposite alphaChannel= AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
+			g2d.setComposite(alphaChannel);
+			g2d.setColor(Color.BLUE);
+			g2d.setFont(new Font("Arial",Font.BOLD,20));
+			FontMetrics fontMetrics = g2d.getFontMetrics();
+			Rectangle2D rect = fontMetrics.getStringBounds(text, g2d);
+			
+			//calculates the coordinate where the String is painted
+			int centerX=(sourceImage.getWidth()-(int)rect.getWidth())/2;
+			int centerY=sourceImage.getHeight()/2;
+			
+			//paints the textual watermark
+			g2d.drawString(text, centerX, centerY);
+			
+			ImageIO.write(sourceImage, "gif", destImageFile);
+			g2d.dispose();
+			
+			System.out.println("The text watermark is added to the image");
+			}catch(IOException ex){
+				System.err.println(ex);
+		}
 	}
 }
