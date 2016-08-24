@@ -60,13 +60,17 @@ public class FileUploadServlet extends HttpServlet{
 		int height=bimg.getHeight();
 		int width=bimg.getWidth();
 		File sourceImageFile= new File(filePath);
-		File destImageFile=new File(uploadFilePath+"/"+"watermarked.gif");
+		String tempWtrmrkName = fileName.substring(0, fileName.indexOf("."))
+				+"Watermarked"
+				+fileName.substring(fileName.indexOf("."));
+		File destImageFile=new File(uploadFilePath+"/"+tempWtrmrkName);
 		addTextWatermark("Watermark", sourceImageFile,destImageFile);
+		request.setAttribute("fileName", tempWtrmrkName);
 		request.setAttribute("height", height);
 		request.setAttribute("width", width);
 		request.setAttribute("filePath", filePath);
 		request.setAttribute("filePath2", "uploads/"+fileName);
-		request.setAttribute("filePath3", "uploads/watermarked.gif");
+		request.setAttribute("filePath3", "uploads/"+tempWtrmrkName);
 		request.setAttribute("message", fileName+" File uploaded successfully!");
 		request.getServletContext().getRequestDispatcher("/response.jsp").forward(request,response);
 		
@@ -91,12 +95,17 @@ public class FileUploadServlet extends HttpServlet{
 		try{
 			BufferedImage sourceImage=ImageIO.read(sourceImageFile);
 			Graphics2D g2d= (Graphics2D) sourceImage.getGraphics();
+			String tempPath = sourceImageFile.getAbsolutePath();
+			System.out.println(tempPath);
+			System.out.println(tempPath.length());
+			System.out.println(tempPath.indexOf("."));
+			System.out.println(tempPath.substring(tempPath.indexOf(".")+1));
 			
 			//initializes necessary graphic properieties
 			AlphaComposite alphaChannel= AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
 			g2d.setComposite(alphaChannel);
 			g2d.setColor(Color.BLUE);
-			g2d.setFont(new Font("Arial",Font.BOLD,20));
+			g2d.setFont(new Font("Arial",Font.BOLD,64));
 			FontMetrics fontMetrics = g2d.getFontMetrics();
 			Rectangle2D rect = fontMetrics.getStringBounds(text, g2d);
 			
@@ -107,7 +116,7 @@ public class FileUploadServlet extends HttpServlet{
 			//paints the textual watermark
 			g2d.drawString(text, centerX, centerY);
 			
-			ImageIO.write(sourceImage, "gif", destImageFile);
+			ImageIO.write(sourceImage, tempPath.substring(tempPath.indexOf(".")+1), destImageFile);
 			g2d.dispose();
 			
 			System.out.println("The text watermark is added to the image");

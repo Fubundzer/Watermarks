@@ -15,6 +15,7 @@
     <h2>${requestScope.message}</h2>
     <h3>${filePath}</h3>
     <h4>${filePath2}</h4>
+    <h5>${fileName}</h5>
     <c:set var="test" value='${filePath}'/>
     <c:set var="test2" value="test1"/>
     <img src="${filePath2}" alt="asd" height="${height}" width="${width}">
