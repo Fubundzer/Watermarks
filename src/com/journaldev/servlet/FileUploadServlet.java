@@ -5,10 +5,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -56,15 +60,20 @@ public class FileUploadServlet extends HttpServlet{
 		}
 		
 		String filePath = uploadFilePath+"/"+fileName;
-		BufferedImage bimg=ImageIO.read(new File(filePath));
-		int height=bimg.getHeight();
-		int width=bimg.getWidth();
+		//BufferedImage bimg=ImageIO.read(new File(filePath));
+		//BufferedImage bimg=ImageIO.read(new File(uploadFilePath+"/"+fileName));
 		File sourceImageFile= new File(filePath);
 		String tempWtrmrkName = fileName.substring(0, fileName.indexOf("."))
 				+"Watermarked"
 				+fileName.substring(fileName.indexOf("."));
 		File destImageFile=new File(uploadFilePath+"/"+tempWtrmrkName);
 		addTextWatermark("Watermark", sourceImageFile,destImageFile);
+		Path path = FileSystems.getDefault().getPath(uploadFilePath+"/"+fileName);
+		System.out.println(path.toString());
+		Files.deleteIfExists(path);
+		BufferedImage bimg=ImageIO.read(destImageFile);
+		int height=bimg.getHeight();
+		int width=bimg.getWidth();
 		request.setAttribute("fileName", tempWtrmrkName);
 		request.setAttribute("height", height);
 		request.setAttribute("width", width);
@@ -94,7 +103,13 @@ public class FileUploadServlet extends HttpServlet{
 	private static void addTextWatermark(String text, File sourceImageFile, File destImageFile){
 		try{
 			BufferedImage sourceImage=ImageIO.read(sourceImageFile);
-			Graphics2D g2d= (Graphics2D) sourceImage.getGraphics();
+			//BufferedImage img= resize(sourceImage,sourceImage.getWidth(),sourceImage.getHeight()+50);
+			Graphics2D g22d= (Graphics2D) sourceImage.getGraphics();
+			BufferedImage img = new BufferedImage(sourceImage.getWidth(),sourceImage.getHeight()+50,BufferedImage.TRANSLUCENT);
+			Graphics2D g2d = (Graphics2D) img.createGraphics();
+			g2d.setColor(Color.WHITE);
+			g2d.fillRect(0, 0, img.getWidth(), img.getHeight());
+			g2d.drawImage(sourceImage, 0, 0, null);
 			String tempPath = sourceImageFile.getAbsolutePath();
 			System.out.println(tempPath);
 			System.out.println(tempPath.length());
@@ -109,19 +124,46 @@ public class FileUploadServlet extends HttpServlet{
 			FontMetrics fontMetrics = g2d.getFontMetrics();
 			Rectangle2D rect = fontMetrics.getStringBounds(text, g2d);
 			
+			int textWidth = fontMetrics.stringWidth(text);
+			int imgWidth=img.getWidth();
+			
+			double widthRatio=(double)imgWidth/(double)textWidth;
+			
+			int newFontSize=(int)(64*widthRatio);
+			int imgHeight=img.getHeight();
+			
+			int fontSizeToUse=Math.min(newFontSize, imgHeight);
+			
+			System.out.println("fontToUse:"+fontSizeToUse);
+			g2d.setFont(new Font("Arial",Font.BOLD,fontSizeToUse));
+			fontMetrics = g2d.getFontMetrics();
+			rect = fontMetrics.getStringBounds(text, g2d);
+			textWidth = fontMetrics.stringWidth(text);
 			//calculates the coordinate where the String is painted
-			int centerX=(sourceImage.getWidth()-(int)rect.getWidth())/2;
-			int centerY=sourceImage.getHeight()/2;
+			int centerX=(img.getWidth()-(int)rect.getWidth())/2;
+			int centerY=img.getHeight()/2;
+		
+			
 			
 			//paints the textual watermark
-			g2d.drawString(text, centerX, centerY);
-			
-			ImageIO.write(sourceImage, tempPath.substring(tempPath.indexOf(".")+1), destImageFile);
+			//g2d.drawString(text, centerX, centerY);
+			g2d.drawString(text, (img.getWidth()/2)-textWidth/2, img.getHeight());
+			ImageIO.write(img, tempPath.substring(tempPath.indexOf(".")+1), destImageFile);
 			g2d.dispose();
 			
 			System.out.println("The text watermark is added to the image");
 			}catch(IOException ex){
 				System.err.println(ex);
 		}
+	}
+	
+	public static BufferedImage resize(BufferedImage image, int width, int height){
+		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
+		Graphics2D g2d = (Graphics2D) bi.createGraphics();
+		g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+		g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+		g2d.drawImage(image, 0, 0, width, height, null);
+		g2d.dispose();
+		return bi;
 	}
 }
