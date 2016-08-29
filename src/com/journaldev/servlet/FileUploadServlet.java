@@ -60,8 +60,6 @@ public class FileUploadServlet extends HttpServlet{
 		}
 		
 		String filePath = uploadFilePath+"/"+fileName;
-		//BufferedImage bimg=ImageIO.read(new File(filePath));
-		//BufferedImage bimg=ImageIO.read(new File(uploadFilePath+"/"+fileName));
 		File sourceImageFile= new File(filePath);
 		String tempWtrmrkName = fileName.substring(0, fileName.indexOf("."))
 				+"Watermarked"
@@ -74,11 +72,8 @@ public class FileUploadServlet extends HttpServlet{
 		BufferedImage bimg=ImageIO.read(destImageFile);
 		int height=bimg.getHeight();
 		int width=bimg.getWidth();
-		request.setAttribute("fileName", tempWtrmrkName);
 		request.setAttribute("height", height);
 		request.setAttribute("width", width);
-		request.setAttribute("filePath", filePath);
-		request.setAttribute("filePath2", "uploads/"+fileName);
 		request.setAttribute("filePath3", "uploads/"+tempWtrmrkName);
 		request.setAttribute("message", fileName+" File uploaded successfully!");
 		request.getServletContext().getRequestDispatcher("/response.jsp").forward(request,response);
@@ -103,18 +98,12 @@ public class FileUploadServlet extends HttpServlet{
 	private static void addTextWatermark(String text, File sourceImageFile, File destImageFile){
 		try{
 			BufferedImage sourceImage=ImageIO.read(sourceImageFile);
-			//BufferedImage img= resize(sourceImage,sourceImage.getWidth(),sourceImage.getHeight()+50);
-			Graphics2D g22d= (Graphics2D) sourceImage.getGraphics();
 			BufferedImage img = new BufferedImage(sourceImage.getWidth(),sourceImage.getHeight()+50,BufferedImage.TRANSLUCENT);
 			Graphics2D g2d = (Graphics2D) img.createGraphics();
 			g2d.setColor(Color.WHITE);
 			g2d.fillRect(0, 0, img.getWidth(), img.getHeight());
 			g2d.drawImage(sourceImage, 0, 0, null);
 			String tempPath = sourceImageFile.getAbsolutePath();
-			System.out.println(tempPath);
-			System.out.println(tempPath.length());
-			System.out.println(tempPath.indexOf("."));
-			System.out.println(tempPath.substring(tempPath.indexOf(".")+1));
 			
 			//initializes necessary graphic properieties
 			AlphaComposite alphaChannel= AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
@@ -122,7 +111,6 @@ public class FileUploadServlet extends HttpServlet{
 			g2d.setColor(Color.BLUE);
 			g2d.setFont(new Font("Arial",Font.BOLD,64));
 			FontMetrics fontMetrics = g2d.getFontMetrics();
-			Rectangle2D rect = fontMetrics.getStringBounds(text, g2d);
 			
 			int textWidth = fontMetrics.stringWidth(text);
 			int imgWidth=img.getWidth();
@@ -134,16 +122,9 @@ public class FileUploadServlet extends HttpServlet{
 			
 			int fontSizeToUse=Math.min(newFontSize, imgHeight);
 			
-			System.out.println("fontToUse:"+fontSizeToUse);
 			g2d.setFont(new Font("Arial",Font.BOLD,fontSizeToUse));
 			fontMetrics = g2d.getFontMetrics();
-			rect = fontMetrics.getStringBounds(text, g2d);
-			textWidth = fontMetrics.stringWidth(text);
-			//calculates the coordinate where the String is painted
-			int centerX=(img.getWidth()-(int)rect.getWidth())/2;
-			int centerY=img.getHeight()/2;
-		
-			
+			textWidth = fontMetrics.stringWidth(text);	
 			
 			//paints the textual watermark
 			//g2d.drawString(text, centerX, centerY);

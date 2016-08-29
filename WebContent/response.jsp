@@ -14,15 +14,14 @@
 <body>
 	<%-- Using JSP EL to get message attribute value from request scope --%>
     <h2>${requestScope.message}</h2>
-    <h3>${filePath}</h3>
-    <h4>${filePath2}</h4>
-    <h5>${fileName}</h5>
-    <c:set var="test" value='${filePath}'/>
-    <c:set var="test2" value="test1"/>
-    <p class="crop">
+    <br>
+    <div class="crop">
     	<img src="${filePath3}" alt="asddd" height="${height}" width="${width}">
-    	<img src="${filePath3}" alt="asdddd" height="${height}" width="${width}">
-    </p>
-    <a href="http://localhost:8080/Watermarks/index.html">Upload another file!</a>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <p><a href="http://localhost:8080/Watermarks/index.html">Upload another file!</a></p>
 </body>
 </html>
