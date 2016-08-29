@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -68,7 +66,6 @@ public class FileUploadServlet extends HttpServlet{
 		addTextWatermark("Watermark", sourceImageFile,destImageFile);
 		Path path = FileSystems.getDefault().getPath(uploadFilePath+"/"+fileName);
 		System.out.println(path.toString());
-		Files.deleteIfExists(path);
 		BufferedImage bimg=ImageIO.read(destImageFile);
 		int height=bimg.getHeight();
 		int width=bimg.getWidth();
@@ -136,15 +133,5 @@ public class FileUploadServlet extends HttpServlet{
 			}catch(IOException ex){
 				System.err.println(ex);
 		}
-	}
-	
-	public static BufferedImage resize(BufferedImage image, int width, int height){
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
-		Graphics2D g2d = (Graphics2D) bi.createGraphics();
-		g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
-		g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
-		g2d.drawImage(image, 0, 0, width, height, null);
-		g2d.dispose();
-		return bi;
 	}
 }
