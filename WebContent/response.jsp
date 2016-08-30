@@ -13,8 +13,6 @@
 <body>
 	<%-- Using JSP EL to get message attribute value from request scope --%>
     <h2>${requestScope.message}</h2>
-    <h3>${requestScope.filePath3}</h3>
-    <h4>${pageContext.request.contextPath}</h4>
     <br>
     <div class="crop">
     	<img src="${requestScope.filePath}" alt="asddd" height="${height2}" width="${width2}">
