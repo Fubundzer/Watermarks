@@ -4,4 +4,12 @@
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
+  <servlet>
+  	<servlet-name>Upload</servlet-name>
+  	<servlet-class>com.journaldev.servlet.FileUploadServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>Upload</servlet-name>
+  	<url-pattern>/FileUpload</url-pattern>
+  </servlet-mapping>
 </web-app>

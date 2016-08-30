@@ -9,19 +9,16 @@
 <html>
 <head>
 <title>Upload File Response</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/Resources/style.css" />
 </head>
 <body>
 	<%-- Using JSP EL to get message attribute value from request scope --%>
     <h2>${requestScope.message}</h2>
+    <h3>${requestScope.filePath3}</h3>
+    <h4>${pageContext.request.contextPath}</h4>
     <br>
     <div class="crop">
-    	<img src="${filePath3}" alt="asddd" height="${height}" width="${width}">
+    	<img src="${requestScope.filePath}" alt="asddd" height="${height2}" width="${width2}">
     </div>
-    <br>
-    <br>
-    <br>
-    <br>
     <p><a href="http://localhost:8080/Watermarks/index.html">Upload another file!</a></p>
 </body>
 </html>

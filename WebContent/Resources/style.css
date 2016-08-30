@@ -2,8 +2,8 @@
 .crop{
 	float:left;
 	margin:0px 0px 0px 0px;
-	overflow:hidden;
+	overflow:visible;
 }
 .crop img{
-	margin:0px 0px -50px 0px
+	margin:0px 0px 0px 0px
 }
