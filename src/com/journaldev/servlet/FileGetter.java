@@ -24,7 +24,29 @@ public class FileGetter extends HttpServlet{
 		
 		String filename=URLDecoder.decode(request.getPathInfo().substring(1),"UTF-8");
 
-		String referer = request.getHeader("Referer").substring(7);
+		System.out.println("Referer:"+request.getHeader("Referer"));
+		if(request.getHeader("Referer").equals(null)||!request.getHeader("Referer").startsWith("http://localhost:8080/Watermarks")){
+				System.out.println("Error");
+				String tempWtrmrkName = filename.substring(0, filename.indexOf("."))
+						+"Watermarked"
+						+filename.substring(filename.indexOf("."));
+				File file = new File(uploadFilePath+"/"+tempWtrmrkName);
+				response.setHeader("Content-Type", getServletContext().getMimeType(tempWtrmrkName));
+				response.setHeader("Content-Length", String.valueOf(file.length()));
+				response.setHeader("Content-Disposition", "inline; filename=\""+file.getName()+"\"");
+				Files.copy(file.toPath(), response.getOutputStream());
+			}
+			else
+			{
+				System.out.println("OK");
+				File file = new File(uploadFilePath+"/"+filename);
+				response.setHeader("Content-Type", getServletContext().getMimeType(filename));
+				response.setHeader("Content-Length", String.valueOf(file.length()));
+				response.setHeader("Content-Disposition", "inline; filename=\""+file.getName()+"\"");
+				Files.copy(file.toPath(), response.getOutputStream());
+			}
+			
+			/*String referer = request.getHeader("Referer").substring(7);
 		
 		if(!referer.startsWith("localhost:8080/Watermarks"))
 		{
@@ -46,6 +68,7 @@ public class FileGetter extends HttpServlet{
 			response.setHeader("Content-Length", String.valueOf(file.length()));
 			response.setHeader("Content-Disposition", "inline; filename=\""+file.getName()+"\"");
 			Files.copy(file.toPath(), response.getOutputStream());
-		}
+		}*/
+
 	}
 }
